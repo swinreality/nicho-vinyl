@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nicho Vinyl - Joyas Ocultas</title>
+  <!-- FAVICON CON EL EMOJI DE RADIO -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📻</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="player-container">
+    <header>
+      <div class="top-bar">
+        <button id="toggle-favs-btn" class="favs-toggle">❤️ Mis Joyas (<span id="fav-count">0</span>)</button>
+      </div>
+      <h1>📻 Nicho Vinyl</h1>
+      <div id="fecha-hoy" class="fecha-hoy"></div>
+      <p>Tu máquina del tiempo musical. Encuentra eso que no sabías que necesitabas escuchar.</p>
+    </header>
+
+    <!-- VISTA PRINCIPAL (EXPLORAR) -->
+    <div id="view-explore">
+      <div class="search-section">
+        <input type="text" id="search-input" placeholder="Busca un género (ej. shoegaze, jazz, cumbia)...">
+        <button id="search-btn">Explorar Nicho</button>
+      </div>
+
+      <div class="tags-section">
+        <span class="tag" data-tag="shoegaze">Shoegaze</span>
+        <span class="tag" data-tag="jazz">Jazz</span>
+        <span class="tag" data-tag="vaporwave">Vaporwave</span>
+        <span class="tag" data-tag="cumbia">Cumbia</span>
+        <span class="tag" data-tag="post-punk">Post-Punk</span>
+        <span class="tag" data-tag="lofi">Lo-Fi</span>
+      </div>
+
+      <div class="suggestion-section">
+        <h2>🎲 Sorpréndeme con una joya oculta</h2>
+        <div class="card" id="suggestion-card">
+          <img id="artist-image" src="https://via.placeholder.com/150/8d6e63/fffaf0?text=Cargando..." alt="Artista" class="artist-img">
+          
+          <div class="card-content">
+            <h3 id="song-title">Cargando...</h3>
+            <p id="song-artist">...</p>
+            <p id="song-desc" class="desc">...</p>
+            
+            <div class="action-buttons">
+              <a href="#" id="yt-link" target="_blank" class="yt-btn">▶ Escuchar en YouTube</a>
+              <button id="fav-btn" class="fav-btn" title="Guardar en favoritos">🤍</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="nav-buttons">
+          <button id="prev-btn" class="prev-btn">⟲ Anterior</button>
+          <button id="next-btn" class="next-btn">Siguiente canción ⟳</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA: MIS FAVORITOS -->
+    <div id="view-favs" style="display: none;">
+      <h2>❤️ Tus Joyas Guardadas</h2>
+      <div id="favs-list" class="favs-list">
+        <!-- Aquí se inyectarán los favoritos vía JS -->
+      </div>
+      <button id="back-to-explore" class="next-btn" style="margin-top: 20px;">Volver a Explorar</button>
+    </div>
+
+    <footer>
+      <p>Hecho con ❤️ para los que odian el algoritmo. 2026.</p>
+    </footer>
+  </div>
+  
+  <script src="canciones.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
