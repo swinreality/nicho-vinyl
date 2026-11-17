@@ -11,7 +11,7 @@ const prevBtn = document.getElementById('prev-btn');
 const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
 const searchType = document.getElementById('search-type'); 
-const surpriseType = document.getElementById('surprise-type'); // NUEVO
+const surpriseType = document.getElementById('surprise-type'); 
 const fechaHoy = document.getElementById('fecha-hoy');
 const artistImage = document.getElementById('artist-image'); 
 const favBtn = document.getElementById('fav-btn');
@@ -67,6 +67,7 @@ function mostrarCancion(cancion, guardarEnHistorial = true) {
 
   if (tooltipBio) tooltipBio.classList.remove('active');
 
+  // Llamamos a las funciones de imagen, nicho y biografía
   buscarImagenArtista(cancion.artista);
   actualizarBotonFavorito();
   calcularNicho(cancion.artista);
@@ -341,12 +342,11 @@ async function buscarPorGenero(genero) {
   return null;
 }
 
-// --- 11. PROCESAR ARTISTA SUGERIDO (Según el modo del selector) ---
+// --- 11. PROCESAR ARTISTA SUGERIDO ---
 async function procesarArtistaSugerido(nombreArtista, contextoDescripcion) {
   const tipoSorpresa = surpriseType ? surpriseType.value : 'artist';
   
   if (tipoSorpresa === 'track') {
-    // MODO CANCIÓN: Buscamos la canción top del artista
     const topCancion = await obtenerTopCancionArtista(nombreArtista);
     return {
       titulo: topCancion,
@@ -355,7 +355,6 @@ async function procesarArtistaSugerido(nombreArtista, contextoDescripcion) {
       busquedaYT: `${nombreArtista} ${topCancion}`
     };
   } else {
-    // MODO ARTISTA: Mostramos al artista y dejamos que el usuario explore
     return {
       titulo: "Artista Recomendado",
       artista: nombreArtista,
@@ -384,9 +383,9 @@ async function buscarCancionEspecifica(query) {
   return null;
 }
 
-// --- 13. FUNCIÓN PRINCIPAL DE SORPRESA (Para el botón Siguiente e inicio) ---
+// --- 13. FUNCIÓN PRINCIPAL DE SORPRESA ---
 async function generarSorpresa() {
-  if (radioInterval) { // Detenemos la radio si estaba activa
+  if (radioInterval) {
     clearInterval(radioInterval);
     radioInterval = null;
     radioBtn.textContent = '📻 Activar Modo Radio';
@@ -409,7 +408,6 @@ async function generarSorpresa() {
       posibleCancion = await buscarSimilarLastFM(cancionActual.artista);
     }
     
-    // Verificamos que no sea el mismo artista
     if (posibleCancion && (!cancionActual || posibleCancion.artista.toLowerCase() !== cancionActual.artista.toLowerCase())) {
       nuevaCancion = posibleCancion;
     }
@@ -447,13 +445,10 @@ if (radioBtn) {
 }
 
 // --- 15. EVENTOS DE LOS BOTONES ---
-
-// Botón Siguiente (Usa la misma lógica de sorpresa)
 if (nextBtn) {
   nextBtn.addEventListener('click', generarSorpresa);
 }
 
-// Botón Anterior
 if (prevBtn) {
   prevBtn.addEventListener('click', () => {
     if (radioInterval) {
@@ -471,7 +466,6 @@ if (prevBtn) {
   });
 }
 
-// Botones de Géneros
 const tags = document.querySelectorAll('.tag:not(.dropdown-content .tag)');
 if (tags.length > 0) {
   tags.forEach(tag => {
@@ -493,7 +487,6 @@ if (tags.length > 0) {
   });
 }
 
-// Buscador Manual
 if (searchBtn) {
   searchBtn.addEventListener('click', async () => {
     if (radioInterval) {
@@ -541,7 +534,7 @@ if (searchInput) {
   });
 }
 
-// --- 16. MENÚ DESPLEGABLE DE GÉNEROS ---
+// --- 16. MENÚ DESPLEGABLE ---
 const listaGeneros = [
   "rock", "pop", "metal", "punk", "blues", "reggae", "salsa", "bachata", 
   "electronica", "techno", "house", "trap", "rap", "hip-hop", "clasica", 
