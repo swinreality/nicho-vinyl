@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nicho Vinyl - Joyas Ocultas</title>
-  <!-- FAVICON CON EL EMOJI DE RADIO -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📻</text></svg>">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -19,11 +18,10 @@
       <p>Tu máquina del tiempo musical. Encuentra eso que no sabías que necesitabas escuchar.</p>
     </header>
 
-    <!-- VISTA PRINCIPAL (EXPLORAR) -->
     <div id="view-explore">
       <div class="search-section">
-        <input type="text" id="search-input" placeholder="Busca un género (ej. shoegaze, jazz, cumbia)...">
-        <button id="search-btn">Explorar Nicho</button>
+        <input type="text" id="search-input" placeholder="Busca un artista, canción o género...">
+        <button id="search-btn">Buscar</button>
       </div>
 
       <div class="tags-section">
@@ -33,25 +31,66 @@
         <span class="tag" data-tag="cumbia">Cumbia</span>
         <span class="tag" data-tag="post-punk">Post-Punk</span>
         <span class="tag" data-tag="lofi">Lo-Fi</span>
+        
+        <div class="dropdown">
+          <button class="dropbtn">Más estilos ⋯</button>
+          <div class="dropdown-content" id="dropdown-menu"></div>
+        </div>
       </div>
 
       <div class="suggestion-section">
-        <h2>🎲 Sorpréndeme con una joya oculta</h2>
+        <!-- FUSIÓN: Título y selector juntos en un solo bloque grande -->
+        <div class="surprise-box">
+          <span class="surprise-text">🎲 Sorpréndeme con:</span>
+          <select id="surprise-type" class="surprise-type-select">
+            <option value="track">una Canción</option>
+            <option value="artist">un Artista</option>
+          </select>
+        </div>
+        
         <div class="card" id="suggestion-card">
-          <img id="artist-image" src="https://via.placeholder.com/150/8d6e63/fffaf0?text=Cargando..." alt="Artista" class="artist-img">
+          
+          <div class="image-container" id="image-container">
+            <img id="artist-image" src="https://via.placeholder.com/150/8d6e63/fffaf0?text=Cargando..." alt="Artista" class="artist-img">
+            <div class="tooltip-bio" id="tooltip-bio">Cargando biografía...</div>
+          </div>
           
           <div class="card-content">
-            <h3 id="song-title">Cargando...</h3>
+            <div class="title-row">
+              <h3 id="song-title">Cargando...</h3>
+            </div>
             <p id="song-artist">...</p>
             <p id="song-desc" class="desc">...</p>
             
+            <div class="niche-meter-container">
+              <span class="niche-label">Popular</span>
+              <div class="niche-bar-bg">
+                <div class="niche-bar-fill" id="niche-bar"></div>
+              </div>
+              <span class="niche-label">Underground</span>
+            </div>
+            <div class="niche-text" id="niche-text" style="text-align: center; font-size: 0.8rem; color: #b3b3b3; margin-top: -10px; margin-bottom: 15px;">Calculando...</div>
+
             <div class="action-buttons">
               <a href="#" id="yt-link" target="_blank" class="yt-btn">▶ Escuchar en YouTube</a>
               <button id="fav-btn" class="fav-btn" title="Guardar en favoritos">🤍</button>
+              <button id="share-btn" class="share-btn" title="Compartir">📋</button>
             </div>
           </div>
         </div>
+
+        <div id="bio-modal" class="modal" style="display: none;">
+          <div class="modal-content">
+            <span class="close-modal" id="close-modal">&times;</span>
+            <h3 id="bio-title">Biografía</h3>
+            <p id="bio-text">Cargando...</p>
+          </div>
+        </div>
         
+        <div class="radio-controls">
+          <button id="radio-btn" class="radio-btn">📻 Activar Modo Radio</button>
+        </div>
+
         <div class="nav-buttons">
           <button id="prev-btn" class="prev-btn">⟲ Anterior</button>
           <button id="next-btn" class="next-btn">Siguiente canción ⟳</button>
@@ -59,12 +98,9 @@
       </div>
     </div>
 
-    <!-- VISTA: MIS FAVORITOS -->
     <div id="view-favs" style="display: none;">
       <h2>❤️ Tus Joyas Guardadas</h2>
-      <div id="favs-list" class="favs-list">
-        <!-- Aquí se inyectarán los favoritos vía JS -->
-      </div>
+      <div id="favs-list" class="favs-list"></div>
       <button id="back-to-explore" class="next-btn" style="margin-top: 20px;">Volver a Explorar</button>
     </div>
 
