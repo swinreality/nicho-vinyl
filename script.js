@@ -1,6 +1,5 @@
 // --- CONFIGURACIÓN DE LAST.FM ---
-const LASTFM_API_KEY = '5996e9a82e91c43fa85d5b359ef8aef9'; 
-
+const LASTFM_API_KEY = '5996e9a82e91c43fa85d5b359ef8aef9';
 // Elementos del DOM
 const songTitle = document.getElementById('song-title');
 const songArtist = document.getElementById('song-artist');
@@ -10,17 +9,16 @@ const nextBtn = document.getElementById('next-btn');
 const prevBtn = document.getElementById('prev-btn');
 const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
-const searchType = document.getElementById('search-type'); 
-const surpriseType = document.getElementById('surprise-type'); 
+const searchType = document.getElementById('search-type');
+const surpriseType = document.getElementById('surprise-type');
 const fechaHoy = document.getElementById('fecha-hoy');
-const artistImage = document.getElementById('artist-image'); 
+const artistImage = document.getElementById('artist-image');
 const favBtn = document.getElementById('fav-btn');
 const shareBtn = document.getElementById('share-btn');
 const radioBtn = document.getElementById('radio-btn');
 const nicheBar = document.getElementById('niche-bar');
 const nicheText = document.getElementById('niche-text');
 const tooltipBio = document.getElementById('tooltip-bio');
-
 // Vistas y Favoritos
 const viewExplore = document.getElementById('view-explore');
 const viewFavs = document.getElementById('view-favs');
@@ -28,18 +26,15 @@ const favsList = document.getElementById('favs-list');
 const toggleFavsBtn = document.getElementById('toggle-favs-btn');
 const backToExploreBtn = document.getElementById('back-to-explore');
 const favCount = document.getElementById('fav-count');
-
 // Menú desplegable
 const dropdownMenu = document.getElementById('dropdown-menu');
 const dropbtn = document.querySelector('.dropbtn');
-
 // Historial y Favoritos
 let historial = [];
 let cancionActual = null;
 let favoritos = JSON.parse(localStorage.getItem('nichoFavoritos')) || [];
-let radioInterval = null; 
+let radioInterval = null;
 let generoRadioActual = null;
-
 // --- 1. MOSTRAR LA FECHA ---
 function mostrarFecha() {
   if (!fechaHoy) return;
@@ -47,38 +42,34 @@ function mostrarFecha() {
   const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
   fechaHoy.textContent = "Edición del " + hoy.toLocaleDateString('es-ES', opciones);
 }
-
 // --- 2. MOSTRAR CANCIÓN ---
 function mostrarCancion(cancion, guardarEnHistorial = true) {
   if (guardarEnHistorial && cancionActual !== null) {
     historial.push(cancionActual);
   }
-  
+
   cancionActual = cancion;
   if (songTitle) songTitle.textContent = cancion.titulo;
   if (songArtist) songArtist.textContent = cancion.artista;
   if (songDesc) songDesc.textContent = cancion.descripcion || "Una joya oculta de la red.";
-  
+
   const query = cancion.busquedaYT || `${cancion.artista} ${cancion.titulo}`;
   if (ytLink) {
     ytLink.href = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
     ytLink.style.display = 'inline-block';
   }
-
   if (tooltipBio) tooltipBio.classList.remove('active');
-
   buscarImagenArtista(cancion.artista);
   actualizarBotonFavorito();
   calcularNicho(cancion.artista);
   cargarTooltip(cancion.artista);
 }
-
 // --- 3. COMPARTIR ---
 if (shareBtn) {
   shareBtn.addEventListener('click', () => {
     if (!cancionActual) return;
     const texto = `¡Échale un ojo a esta joya oculta que encontré en Nicho Vinyl! 🎵 ${cancionActual.titulo} - ${cancionActual.artista} \n https://swinreality.github.io/nicho-vinyl/`;
-    
+
     navigator.clipboard.writeText(texto).then(() => {
       shareBtn.textContent = '✅';
       setTimeout(() => { shareBtn.textContent = '📋'; }, 2000);
@@ -87,32 +78,29 @@ if (shareBtn) {
     });
   });
 }
-
 // --- 4. MAPA DE NICHO ---
 async function calcularNicho(artista) {
   if (!nicheBar || !nicheText) return;
   nicheBar.style.width = '50%';
   nicheBar.style.backgroundColor = '#8d6e63';
   nicheText.textContent = "Calculando...";
-
   try {
     const url = `https://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=${encodeURIComponent(artista)}&api_key=${LASTFM_API_KEY}&format=json`;
     const response = await fetch(url);
     const data = await response.json();
-    
+
     if (data.artist && data.artist.stats && data.artist.stats.listeners) {
       const listeners = parseInt(data.artist.stats.listeners);
       let percentage = 100;
       let label = "";
-      
+
       if (listeners > 1000000) { percentage = 10; label = "Mainstream (Muy popular)"; }
       else if (listeners > 100000) { percentage = 40; label = "Conocido"; }
       else if (listeners > 10000) { percentage = 70; label = "Nicho (Poco conocido)"; }
       else { percentage = 95; label = "Underground (Joya oculta)"; }
-
       nicheBar.style.width = `${percentage}%`;
       nicheText.textContent = label;
-      
+
       if (percentage > 80) nicheBar.style.backgroundColor = '#3e2723';
       else if (percentage > 50) nicheBar.style.backgroundColor = '#8d6e63';
       else nicheBar.style.backgroundColor = '#d7ccc8';
@@ -121,21 +109,19 @@ async function calcularNicho(artista) {
     console.error("Error calculando nicho:", error);
   }
 }
-
 // --- 5. TOOLTIP BIOGRAFÍA ---
 async function cargarTooltip(artista) {
   if (!tooltipBio) return;
   tooltipBio.textContent = "Cargando...";
-
   try {
     const url = `https://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=${encodeURIComponent(artista)}&api_key=${LASTFM_API_KEY}&format=json`;
     const response = await fetch(url);
     const data = await response.json();
-    
+
     if (data.artist && data.artist.bio && data.artist.bio.summary) {
       let bio = data.artist.bio.summary;
-      bio = bio.replace(/<a href=".*?">.*?<\/a>/g, ''); 
-      bio = bio.replace(/\s+/g, ' '); 
+      bio = bio.replace(/<a href=".*?">.*?<\/a>/g, '');
+      bio = bio.replace(/\s+/g, ' ');
       tooltipBio.textContent = bio;
     } else {
       tooltipBio.textContent = "Sin biografía disponible.";
@@ -144,34 +130,16 @@ async function cargarTooltip(artista) {
     tooltipBio.textContent = "Error cargando biografía.";
   }
 }
-
 // LÓGICA DEL RATÓN
 const imageContainer = document.getElementById('image-container');
-let timeoutHover;
-
 if (imageContainer && tooltipBio) {
   imageContainer.addEventListener('mouseenter', () => {
-    clearTimeout(timeoutHover);
     tooltipBio.classList.add('active');
   });
-
   imageContainer.addEventListener('mouseleave', () => {
-    timeoutHover = setTimeout(() => {
-      if (!tooltipBio.matches(':hover')) {
-        tooltipBio.classList.remove('active');
-      }
-    }, 200);
-  });
-
-  tooltipBio.addEventListener('mouseenter', () => {
-    clearTimeout(timeoutHover);
-  });
-
-  tooltipBio.addEventListener('mouseleave', () => {
     tooltipBio.classList.remove('active');
   });
 }
-
 // --- 6. FAVORITOS ---
 function actualizarBotonFavorito() {
   if (!favBtn || !cancionActual) return;
@@ -184,19 +152,16 @@ function actualizarBotonFavorito() {
     favBtn.title = "Guardar en favoritos";
   }
 }
-
 function guardarFavoritos() {
   localStorage.setItem('nichoFavoritos', JSON.stringify(favoritos));
   favCount.textContent = favoritos.length;
   renderizarFavoritos();
 }
-
 function renderizarFavoritos() {
   if (favoritos.length === 0) {
     favsList.innerHTML = '<p style="text-align: center; font-style: italic; color: #8d6e63;">Aún no tienes joyas guardadas. Explora y dale al corazón.</p>';
     return;
   }
-
   favsList.innerHTML = '';
   favoritos.forEach((fav, index) => {
     const div = document.createElement('div');
@@ -213,7 +178,6 @@ function renderizarFavoritos() {
     `;
     favsList.appendChild(div);
   });
-
   document.querySelectorAll('.remove-fav-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const index = e.target.getAttribute('data-index');
@@ -223,7 +187,6 @@ function renderizarFavoritos() {
     });
   });
 }
-
 if (favBtn) {
   favBtn.addEventListener('click', () => {
     if (!cancionActual) return;
@@ -237,7 +200,6 @@ if (favBtn) {
     actualizarBotonFavorito();
   });
 }
-
 if (toggleFavsBtn) {
   toggleFavsBtn.addEventListener('click', () => {
     viewExplore.style.display = 'none';
@@ -245,52 +207,45 @@ if (toggleFavsBtn) {
     renderizarFavoritos();
   });
 }
-
 if (backToExploreBtn) {
   backToExploreBtn.addEventListener('click', () => {
     viewFavs.style.display = 'none';
     viewExplore.style.display = 'block';
   });
 }
-
 // --- 7. IMAGEN ---
 async function buscarImagenArtista(artista) {
   if (!artistImage) return;
-  
+
   const fallbackImg = "https://images.unsplash.com/photo-1603048588665-791ca8aea617?q=80&w=200&auto=format&fit=crop";
   artistImage.src = "https://via.placeholder.com/150/8d6e63/fffaf0?text=Buscando...";
-
   try {
     const urlItunes = `https://itunes.apple.com/search?term=${encodeURIComponent(artista)}&entity=musicArtist&limit=1`;
     const resItunes = await fetch(urlItunes);
     const dataItunes = await resItunes.json();
-
     if (dataItunes.results && dataItunes.results.length > 0) {
       const artistaId = dataItunes.results[0].artistId;
       const urlAlbums = `https://itunes.apple.com/lookup?id=${artistaId}&entity=album&limit=1`;
       const resAlbums = await fetch(urlAlbums);
       const dataAlbums = await resAlbums.json();
-
       if (dataAlbums.results.length > 1 && dataAlbums.results[1].artworkUrl100) {
         let imgUrl = dataAlbums.results[1].artworkUrl100.replace('100x100bb', '200x200bb');
         artistImage.src = imgUrl;
-        return; 
+        return;
       }
     }
     const urlDeezer = `https://api.deezer.com/search/artist?q=${encodeURIComponent(artista)}&limit=1`;
     const resDeezer = await fetch(urlDeezer);
     const dataDeezer = await resDeezer.json();
-
     if (dataDeezer.data && dataDeezer.data.length > 0 && dataDeezer.data[0].picture_medium) {
       artistImage.src = dataDeezer.data[0].picture_medium;
     } else {
-      artistImage.src = fallbackImg; 
+      artistImage.src = fallbackImg;
     }
   } catch (error) {
-    if (artistImage) artistImage.src = fallbackImg; 
+    if (artistImage) artistImage.src = fallbackImg;
   }
 }
-
 // --- 8. OBTENER CANCIÓN TOP ---
 async function obtenerTopCancionArtista(artista) {
   const url = `https://ws.audioscrobbler.com/2.0/?method=artist.gettoptracks&artist=${encodeURIComponent(artista)}&api_key=${LASTFM_API_KEY}&format=json&limit=1`;
@@ -301,9 +256,8 @@ async function obtenerTopCancionArtista(artista) {
       return data.toptracks.track[0].name;
     }
   } catch (error) { console.error("Error obteniendo top track:", error); }
-  return "Una canción"; 
+  return "Una canción";
 }
-
 // --- 9. LAST.FM SIMILARES ---
 async function buscarSimilarLastFM(artista) {
   const url = `https://ws.audioscrobbler.com/2.0/?method=artist.getSimilar&artist=${encodeURIComponent(artista)}&api_key=${LASTFM_API_KEY}&format=json&limit=20`;
@@ -320,7 +274,6 @@ async function buscarSimilarLastFM(artista) {
   } catch (error) { console.error(error); }
   return null;
 }
-
 // --- 10. BUSCAR POR GÉNERO ---
 async function buscarPorGenero(genero) {
   const url = `https://ws.audioscrobbler.com/2.0/?method=tag.gettopartists&tag=${encodeURIComponent(genero)}&api_key=${LASTFM_API_KEY}&format=json&limit=30`;
@@ -340,11 +293,10 @@ async function buscarPorGenero(genero) {
   } catch (error) { console.error(error); }
   return null;
 }
-
 // --- 11. PROCESAR ARTISTA SUGERIDO ---
 async function procesarArtistaSugerido(nombreArtista, contextoDescripcion) {
   const tipoSorpresa = surpriseType ? surpriseType.value : 'artist';
-  
+
   if (tipoSorpresa === 'track') {
     const topCancion = await obtenerTopCancionArtista(nombreArtista);
     return {
@@ -362,7 +314,6 @@ async function procesarArtistaSugerido(nombreArtista, contextoDescripcion) {
     };
   }
 }
-
 // --- 12. BÚSQUEDA ESPECÍFICA ---
 async function buscarCancionEspecifica(query) {
   const url = `https://ws.audioscrobbler.com/2.0/?method=track.search&track=${encodeURIComponent(query)}&api_key=${LASTFM_API_KEY}&format=json&limit=5`;
@@ -381,7 +332,6 @@ async function buscarCancionEspecifica(query) {
   } catch (error) { console.error(error); }
   return null;
 }
-
 // --- 13. FUNCIÓN PRINCIPAL DE SORPRESA ---
 async function generarSorpresa() {
   if (radioInterval) {
@@ -390,35 +340,33 @@ async function generarSorpresa() {
     radioBtn.textContent = '📻 Activar Modo Radio';
     radioBtn.classList.remove('activo');
   }
-
   if (songTitle) songTitle.textContent = "Buscando...";
   if (songDesc) songDesc.textContent = "Consultando el algoritmo...";
-  
+
   let nuevaCancion = null;
   let intentos = 0;
-  
+
   while (!nuevaCancion && intentos < 5) {
     intentos++;
     let posibleCancion = null;
-    
+
     if (generoRadioActual) {
       posibleCancion = await buscarPorGenero(generoRadioActual);
     } else if (cancionActual && cancionActual.artista) {
       posibleCancion = await buscarSimilarLastFM(cancionActual.artista);
     }
-    
+
     if (posibleCancion && (!cancionActual || posibleCancion.artista.toLowerCase() !== cancionActual.artista.toLowerCase())) {
       nuevaCancion = posibleCancion;
     }
   }
-  
+
   if (!nuevaCancion) {
     nuevaCancion = listaCanciones[Math.floor(Math.random() * listaCanciones.length)];
   }
-  
+
   mostrarCancion(nuevaCancion);
 }
-
 // --- 14. MODO RADIO (5 SEGUNDOS) ---
 if (radioBtn) {
   radioBtn.addEventListener('click', () => {
@@ -431,23 +379,20 @@ if (radioBtn) {
     } else {
       radioBtn.textContent = '⏹ Detener Radio';
       radioBtn.classList.add('activo');
-      
+
       if (cancionActual && cancionActual.descripcion) {
         const match = cancionActual.descripcion.match(/género (.*?)\./);
         generoRadioActual = match ? match[1] : null;
       }
-
       generarSorpresa();
       radioInterval = setInterval(generarSorpresa, 5000);
     }
   });
 }
-
 // --- 15. EVENTOS DE LOS BOTONES ---
 if (nextBtn) {
   nextBtn.addEventListener('click', generarSorpresa);
 }
-
 if (prevBtn) {
   prevBtn.addEventListener('click', () => {
     if (radioInterval) {
@@ -464,13 +409,12 @@ if (prevBtn) {
     }
   });
 }
-
 const tags = document.querySelectorAll('.tag:not(.dropdown-content .tag)');
 if (tags.length > 0) {
   tags.forEach(tag => {
     tag.addEventListener('click', async () => {
       const genero = tag.getAttribute('data-tag');
-      if (radioInterval) { 
+      if (radioInterval) {
         clearInterval(radioInterval);
         radioInterval = null;
         radioBtn.textContent = '📻 Activar Modo Radio';
@@ -485,7 +429,6 @@ if (tags.length > 0) {
     });
   });
 }
-
 if (searchBtn) {
   searchBtn.addEventListener('click', async () => {
     if (radioInterval) {
@@ -496,13 +439,12 @@ if (searchBtn) {
     }
     const query = searchInput.value.trim();
     if (!query) return;
-    
-    generoRadioActual = null; 
+
+    generoRadioActual = null;
     if (songTitle) songTitle.textContent = "Buscando...";
     if (songDesc) songDesc.textContent = `Buscando...`;
-
     let resultado = null;
-    
+
     if (searchType.value === 'track') {
       if (songArtist) songArtist.textContent = "Buscando canción...";
       resultado = await buscarCancionEspecifica(query);
@@ -513,7 +455,6 @@ if (searchBtn) {
         resultado = await buscarPorGenero(query);
       }
     }
-
     if (resultado) {
       mostrarCancion(resultado);
     } else {
@@ -526,21 +467,18 @@ if (searchBtn) {
     }
   });
 }
-
 if (searchInput) {
   searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') searchBtn.click();
   });
 }
-
 // --- 16. MENÚ DESPLEGABLE ---
 const listaGeneros = [
-  "rock", "pop", "metal", "punk", "blues", "reggae", "salsa", "bachata", 
-  "electronica", "techno", "house", "trap", "rap", "hip-hop", "clasica", 
-  "folk", "country", "gospel", "soul", "funk", "disco", "ambient", "indie", 
+  "rock", "pop", "metal", "punk", "blues", "reggae", "salsa", "bachata",
+  "electronica", "techno", "house", "trap", "rap", "hip-hop", "clasica",
+  "folk", "country", "gospel", "soul", "funk", "disco", "ambient", "indie",
   "alternativo", "ska", "merengue", "reggaeton", "flamenco", "tango", "jazz fusión"
 ];
-
 if (dropdownMenu) {
   listaGeneros.forEach(genero => {
     const span = document.createElement('span');
@@ -565,14 +503,12 @@ if (dropdownMenu) {
     dropdownMenu.appendChild(span);
   });
 }
-
 if (dropbtn) {
   dropbtn.addEventListener('click', (e) => {
     e.stopPropagation();
     dropdownMenu.classList.toggle('show');
   });
 }
-
 window.addEventListener('click', (e) => {
   if (!e.target.matches('.dropbtn')) {
     if (dropdownMenu.classList.contains('show')) {
@@ -580,7 +516,6 @@ window.addEventListener('click', (e) => {
     }
   }
 });
-
 // --- 17. INICIALIZACIÓN ---
 mostrarFecha();
 if (favCount) favCount.textContent = favoritos.length;
