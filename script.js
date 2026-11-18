@@ -67,7 +67,6 @@ function mostrarCancion(cancion, guardarEnHistorial = true) {
 
   if (tooltipBio) tooltipBio.classList.remove('active');
 
-  // Llamamos a las funciones de imagen, nicho y biografía
   buscarImagenArtista(cancion.artista);
   actualizarBotonFavorito();
   calcularNicho(cancion.artista);
