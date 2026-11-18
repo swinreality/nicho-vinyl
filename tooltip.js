@@ -23,9 +23,9 @@
 
     var w = el.offsetWidth, h = el.offsetHeight, left;
 
-    if (a.right + GAP + w <= vw - MARGIN)     left = a.right + GAP;
-    else if (a.left - GAP - w >= MARGIN)      left = a.left - GAP - w;
-    else                                      left = (vw - w) / 2;
+    if (a.left - GAP - w >= MARGIN)            left = a.left - GAP - w;
+    else if (a.right + GAP + w <= vw - MARGIN) left = a.right + GAP;
+    else                                       left = a.left;
     left = Math.min(Math.max(MARGIN, left), vw - MARGIN - w);
 
     var top = a.top + a.height / 2 - h / 2;
